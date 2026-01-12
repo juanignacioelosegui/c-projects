@@ -96,8 +96,14 @@ Cerrar ventana -> Salir del juego
 
 Para compilar el proyecto es necesario tener instalada la biblioteca **SDL2**.
 
-El comando para compilar es ```gcc -o snake snake.c `sdl2-config --cflags --libs````.
-Para ejecutar basta con correr ```./snake```.
+El comando para compilar es 
+```bash
+gcc -o snake snake.c `sdl2-config --cflags --libs`
+```
+Para ejecutar basta con correr
+```bash
+./snake
+```
 
 El juego se compila como una aplicación de escritorio y se ejecuta desde consola.
 
