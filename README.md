@@ -1,4 +1,4 @@
-# C-projects 🧠⚙️
+# c-projects 🧠⚙️
 
 Repositorio de proyectos y experimentos en **lenguaje C**, enfocado en aprender y practicar programación de bajo nivel, estructuras de datos, manejo de memoria, y desarrollo de aplicaciones simples con librerías externas como **SDL2**.
 
