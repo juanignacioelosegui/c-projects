@@ -29,35 +29,47 @@ static void cat( FILE * p )
 
 int main (  )
 {
-    //  Abrir diccionario
-    FILE * ptr = fopen( DICCIONARIO, "r" );
-    
-    if ( !ptr )
-    :{
-        perror("No se pudo abrir diccionario.txt\n");
-        return 1;
-    } else printf("[DBG] Diccionario abierto.\n");
-    
-    //  printf("[DBG] Imprimiendo diccionario...\n");
-    //  cat(ptr);
-    //  printf("\n[DBG] Diccionario completo impreso.\n");
+    printf("*** AHORCADO ***\n");
+    short rounds = 5;
 
-    //  Elegir palabra aleatoria
-    //  Source - https://stackoverflow.com/a/20774074
-    //  Posted by Farouq Jouti
-    //  Retrieved 2026-01-30, License - CC BY-SA 3.0
-    char palabra[32];
-    int i = 0 , ran = 0;
-    srand( time(NULL) );
-    for( ; fgets(palabra , sizeof(palabra) , ptr) ; i++ ) { ; }
-    ran = rand(  ) % i;
-    rewind( ptr );
-    for( i = 0 ; i < ran ; i++ )
+    while ( rounds > 0 )
     {
-        fgets( palabra , sizeof(palabra) , ptr );
+        //  Abrir diccionario
+        FILE * ptr = fopen( DICCIONARIO, "r" );
+        
+        if ( !ptr )
+        {
+            perror("[DBG] No se pudo abrir diccionario.txt\n");
+            return 1;
+        } else printf("[DBG] Diccionario abierto.\n");
+        
+        //  printf("[DBG] Imprimiendo diccionario...\n");
+        //  cat(ptr);
+        //  printf("\n[DBG] Diccionario completo impreso.\n");
+
+        //  Elegir palabra aleatoria
+        //  Source - https://stackoverflow.com/a/20774074
+        //  Posted by Farouq Jouti
+        //  Retrieved 2026-01-30, License - CC BY-SA 3.0
+        char palabra[32];
+        int i = 0 , ran = 0;
+        srand( time(NULL) );
+        for( ; fgets(palabra , sizeof(palabra) , ptr) ; i++ ) { ; }
+        ran = rand(  ) % i;
+        rewind( ptr );
+        for( i = 0 ; i < ran ; i++ )
+        {
+            fgets( palabra , sizeof(palabra) , ptr );
+        }
+
+        printf("[DBG] Palabra aleatoria: %s\n", palabra);
+        printf("[DBG] Longitud de la palabra: %ld\n", strlen(palabra)-1);
+
+        
+
+        rounds--;
+
     }
-    printf("Palabra aleatoria: %s\n", palabra);
-    printf("Longitud de la palabra: %ld\n", strlen(palabra)-1);
 
 
 
