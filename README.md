@@ -45,6 +45,7 @@ Cada proyecto tiene su propio README con detalles específicos sobre su funciona
 - **Compilador:** GCC
 - **Librerías externas:**  
   - SDL2 (gráficos, eventos, temporización)
+  - iconv (limpieza de .txt)
 - **Plataforma:** Linux (principalmente)
 
 ---
