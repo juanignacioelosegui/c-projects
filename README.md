@@ -1,6 +1,6 @@
 # c-projects 🧠⚙️
 
-Repositorio de proyectos y experimentos en **lenguaje C**, enfocado en aprender y practicar programación de bajo nivel, estructuras de datos, manejo de memoria, y desarrollo de aplicaciones simples con librerías externas como **SDL2**.
+Repositorio de proyectos y experimentos en **lenguaje C**, enfocado en aprender y practicar programación de bajo nivel, estructuras de datos, manejo de memoria, y desarrollo de aplicaciones simples con librerías externas como **SDL2**, **iconv**, etcétera. A veces programo sin librerías.
 
 Este repositorio funciona como un espacio de exploración, pruebas y pequeños proyectos independientes.
 
