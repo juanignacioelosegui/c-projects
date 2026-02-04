@@ -23,11 +23,11 @@
 //  No tengo itea de cómo funciona
 static void cat( FILE * p )
 {
-    char   buf[8];
+    char buf[8];
     size_t nbytes;
-    while ( (nbytes = fread(buf, sizeof(char), sizeof(buf), p)) != 0 )
+    while ((nbytes = fread(buf, sizeof(char), sizeof(buf), p)) != 0)
     {
-        fwrite( buf, sizeof(char), nbytes, stdout );
+        fwrite(buf, sizeof(char), nbytes, stdout);
     }
 }
 
@@ -49,8 +49,9 @@ static bool validarIntento( char intento, const bool usadas[26] )
         return false;
     }
 
-    intento = ( char )tolower( (unsigned char)intento );
+    intento = (char)tolower((unsigned char)intento);
     int idx = intento - 'a';
+
     if ( idx < 0 || idx >= 26 )
     {
         printf("Solo letras a-z.\n");
@@ -68,15 +69,16 @@ static bool validarIntento( char intento, const bool usadas[26] )
 
 static void printEspacios( const char * estado )
 {
-    for  (size_t i = 0; estado[i] != '\0'; i++) printf("%c ", estado[i]);
+    for (int i = 0; estado[i] != '\0'; i++) { printf("%c ", estado[i]); }
+
     printf("\n");
 }
 
-static bool updatePalabra( const char *palabra, char * estado, char intento )
+static bool updatePalabra( const char * palabra, char * estado, char intento )
 {
-    // Devuelve true si pegó al menos una
     bool acierto = false;
-    for ( size_t i = 0; palabra[i] != '\0'; i++ )
+
+    for ( int i = 0; palabra[i] != '\0'; i++ )
     {
         if ( tolower((unsigned char)palabra[i]) == intento )
         {
@@ -84,50 +86,36 @@ static bool updatePalabra( const char *palabra, char * estado, char intento )
             acierto = true;
         }
     }
+
     return acierto;
 }
 
 static bool gano( const char * estado )
 {
-    return strchr( estado, '_' ) == NULL;
+    return strchr(estado, '_') == NULL;
 }
 
-static bool elegir_palabra_aleatoria( FILE * ptr, char palabra[MAX_PAL] )
-{
-    int lineas = 0;
-    while ( fgets(palabra, MAX_PAL, ptr) ) lineas++;
-
-    if ( lineas == 0 ) return false;
-
-    int ran = rand() % lineas;
-    rewind( ptr );
-
-    for ( int i = 0; i <= ran; i++ )
-    {
-        if ( !fgets(palabra, MAX_PAL, ptr) )
-            return false;
-    }
-
-    limpiar_newline( palabra );
-    return true;
-}
-
-int main (  )
+int main(void)
 {
     printf("*** AHORCADO ***\n");
-    short rounds = 5;
+    short rounds = 3;
 
-    while ( rounds > 0 )
+    // Semilla una sola vez (no por ronda)
+    srand((unsigned)time(NULL));
+
+    while (rounds > 0)
     {
-        //  Abrir diccionario
-        FILE * ptr = fopen( DICCIONARIO, "r" );
-        
-        if ( !ptr )
+        // Abrir diccionario
+        FILE *ptr = fopen(DICCIONARIO, "r");
+
+        if (!ptr)
         {
-            perror("[DBG] No se pudo abrir diccionario.txt\n");
+            perror("[DBG] No se pudo abrir diccionario.txt");
             return 1;
-        } else printf("[DBG] Diccionario abierto.\n");
-        
+        }
+        else
+            printf("[DBG] Diccionario abierto.\n");
+
         //  printf("[DBG] Imprimiendo diccionario...\n");
         //  cat(ptr);
         //  printf("\n[DBG] Diccionario completo impreso.\n");
@@ -136,34 +124,60 @@ int main (  )
         //  Source - https://stackoverflow.com/a/20774074
         //  Posted by Farouq Jouti
         //  Retrieved 2026-01-30, License - CC BY-SA 3.0
-        char palabra[32];
-        int i = 0 , ran = 0;
-        srand( time(NULL) );
-        for( ; fgets(palabra , sizeof(palabra) , ptr) ; i++ ) { ; }
-        ran = rand(  ) % i;
-        rewind( ptr );
-        for( i = 0 ; i < ran ; i++ )
+        char palabra[MAX_PAL];
+        int i = 0, ran = 0;
+
+        for ( ; fgets(palabra, sizeof(palabra), ptr); i++ ) { ; }
+
+        if ( i == 0 )
         {
-            fgets( palabra , sizeof(palabra) , ptr );
+            printf("[DBG] El diccionario está vacío.\n");
+            fclose(ptr);
+            return 1;
         }
 
-                fclose(ptr);
+        ran = rand(  ) % i;
+        rewind( ptr );
 
-        // Estado inicial: "____"
-        size_t n = strlen(palabra);
-        if (n == 0)
+        for ( i = 0; i < ran; i++ )
         {
-            printf("Palabra vacía (línea rara en diccionario). Salteo.\n");
+            if ( !fgets(palabra, sizeof(palabra), ptr) )
+            {
+                printf("[DBG] Error leyendo el diccionario.\n");
+                fclose( ptr );
+                return 1;
+            }
+        }
+
+        // Leer la palabra 
+        if ( !fgets(palabra, sizeof(palabra), ptr) )
+        {
+            printf("[DBG] Error leyendo la palabra elegida.\n");
+            fclose( ptr );
+            return 1;
+        }
+
+        limpiar_newline( palabra );
+        fclose( ptr );
+
+        // Estado inicial
+        size_t n = strlen( palabra );
+        if ( n == 0 )
+        {
+            printf("[DBG] Palabra vacía (línea rara en diccionario). Salteo.\n");
+            rounds--;
+            continue;
+        }
+
+        if ( n >= MAX_PAL )
+        {
+            printf("Palabra demasiado larga para el buffer. Salteo.\n");
             rounds--;
             continue;
         }
 
         char estado[MAX_PAL];
-        for (size_t i = 0; i < n; i++)
-        {
-            // Si querés soportar guiones u otros, acá los copiás directo
-            estado[i] = '_';
-        }
+        for ( size_t k = 0; k < n; k++ ) { estado[k] = '_'; }
         estado[n] = '\0';
 
         bool usadas[26] = {0};
@@ -176,45 +190,32 @@ int main (  )
 
             printf("Escribí una letra: ");
             char intento;
-            if (scanf(" %c", &intento) != 1)
+
+            if ( scanf(" %c", &intento) != 1 )
             {
                 printf("No pude leer el input.\n");
                 return 1;
             }
 
-            // validar
-            while (!validarIntento(intento, usadas))
+            while ( !validarIntento(intento, usadas) )
             {
                 printf("Escribí una letra: ");
-                if (scanf(" %c", &intento) != 1)
-                    return 1;
+                if ( scanf(" %c", &intento) != 1 ) { return 1; }
             }
 
             intento = (char)tolower((unsigned char)intento);
             usadas[intento - 'a'] = true;
 
-            // actualizar estado
             bool acerto = updatePalabra(palabra, estado, intento);
-            if (!acerto)
+            if ( !acerto )
             {
                 printf("No está!\n");
                 vidas--;
-            }
-            else
-            {
-                printf("Bien!\n");
-            }
+            } else { printf("Bien!\n"); }
         }
 
-        if (gano(estado))
-        {
-            printf("\nGanaste! La palabra era: %s\n", palabra);
-        }
-
-        else
-        {
-            printf("\nPerdiste! La palabra era: %s\n", palabra);
-        }
+        if ( gano(estado) ) { printf("\nGanaste! La palabra era: %s\n", palabra); }
+        else { printf("\nPerdiste! La palabra era: %s\n", palabra); }
 
         rounds--;
     }
@@ -222,3 +223,4 @@ int main (  )
     printf("\nFin del juego.\n");
     return 0;
 }
+
