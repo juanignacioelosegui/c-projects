@@ -6,13 +6,15 @@
 #define WIDTH 900
 #define HEIGHT 600
 
+//  Registra si se clickeó dentro de los límites del botón
 static bool point_in_rect( int x, int y, const SDL_Rect * r )
 {
     return ( x >= r->x && x < r->x + r->w && y >= r->y && y < r->y + r->h );
 }
 
-int main(int argc, char *argv[])
+int main( int argc, char *argv[] )
 {
+    //  Manejar argumentos (candidatos)
     if ( argc < 3 )
     {
         fprintf( stderr, "Uso: %s \"Candidato1\" \"Candidato2\"\n", argv[0] );
@@ -22,12 +24,14 @@ int main(int argc, char *argv[])
     const char *cand1 = argv[1];
     const char *cand2 = argv[2];
 
+    //  Iniciar driver de video
     if ( SDL_Init(SDL_INIT_VIDEO) < 0 )
     {
         fprintf( stderr, "[DBG] SDL no pudo arrancar! Error: %s\n", SDL_GetError() );
         return EXIT_FAILURE;
     }
 
+    //  Crear ventana
     SDL_Window * window = SDL_CreateWindow(
         "Sistema de Votación",
         SDL_WINDOWPOS_CENTERED,
@@ -42,6 +46,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    //  Crear renderer
     SDL_Renderer * renderer = SDL_CreateRenderer(
         window, -1,
         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -54,24 +59,26 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    //  Crear botones
     SDL_Rect btn1 = { 100, 200, 300, 150 };
     SDL_Rect btn2 = { 500, 200, 300, 150 };
 
+    //  Crear contadores de votos
     int votos1 = 0;
     int votos2 = 0;
 
     SDL_Event e;
     bool run = true;
 
-    while (run)
+    while ( run )
     {
         //  Eventos
         while ( SDL_PollEvent(&e) )
         {
-            //  Cierre de ventana
+            //  Cerrar ventana si el usuario quiere
             if (e.type == SDL_QUIT) run = false;
 
-            //  Clickeo para votar
+            //  Incrementar votos según qué botón se presione
             else if ( e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT )
             {
                 int mx = e.button.x;
@@ -88,6 +95,7 @@ int main(int argc, char *argv[])
                     printf( "Voto para %s | %d - %d\n", cand2, votos1, votos2 );
                 }
             }
+            //  Otros botones
             else if ( e.type == SDL_KEYDOWN )
             {
                 //  La R se usa para resetear los votos
@@ -96,9 +104,9 @@ int main(int argc, char *argv[])
                     votos1 = 0;
                     votos2 = 0;
                     printf( "Reset | %d - %d\n", votos1, votos2 );
-                } 
+                }
+                //  Con escape se sale del programa
                 else if ( e.key.keysym.sym == SDLK_ESCAPE ) run = false;
-                
             }
         }
 
@@ -119,6 +127,7 @@ int main(int argc, char *argv[])
         SDL_RenderPresent( renderer );
     }
 
+    //  Limpiar todo
     SDL_DestroyRenderer( renderer );
     SDL_DestroyWindow( window );
     SDL_Quit();
